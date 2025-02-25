@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Vintage List Maker</title>
+    <style>
+        body {
+            background-color: #c0c0c0;
+            font-family: "Courier New", monospace;
+            color: #000080;
+            text-align: center;
+        }
+        h1 {
+            text-shadow: 2px 2px #fff;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background-color: #ffffe0;
+            border: 2px solid #000;
+            padding: 10px;
+        }
+        .button {
+            background-color: #008080;
+            color: #fff;
+            border: 2px outset #004040;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #004040;
+        }
+        .list {
+            text-align: left;
+            padding: 10px;
+            border: 2px groove #000;
+            background-color: #f0f8ff;
+        }
+        input[type="text"], input[type="url"] {
+            width: 60%;
+            padding: 5px;
+            margin: 5px;
+        }
+        input[type="file"] {
+            margin: 5px;
+        }
+    </style>
+    <script>
+        function addItem() {
+            const list = document.getElementById("list");
+            const type = document.getElementById("itemType").value;
+            const inputValue = document.getElementById("inputValue").value;
+            let item;
+
+            if (type === "text") {
+                item = document.createElement("li");
+                item.textContent = inputValue;
+            } else if (type === "link") {
+                item = document.createElement("li");
+                const link = document.createElement("a");
+                link.href = inputValue;
+                link.textContent = inputValue;
+                link.target = "_blank";
+                item.appendChild(link);
+            } else if (type === "image") {
+                item = document.createElement("li");
+                const img = document.createElement("img");
+                img.src = inputValue;
+                img.style.maxWidth = "200px";
+                img.style.border = "2px solid #000";
+                item.appendChild(img);
+            }
+            list.appendChild(item);
+            document.getElementById("inputValue").value = "";
+        }
+    </script>
+</head>
+<body>
+    <h1>✨ Vintage List Maker ✨</h1>
+    <div class="container">
+        <h2>Create Your List</h2>
+        <label for="itemType">Choose Item Type:</label>
+        <select id="itemType">
+            <option value="text">Text</option>
+            <option value="link">Link</option>
+            <option value="image">Image (URL)</option>
+        </select>
+        <br>
+        <input type="text" id="inputValue" placeholder="Enter text, link, or image URL">
+        <button class="button" onclick="addItem()">Add Item</button>
+        
+        <h3>Your List:</h3>
+        <ul id="list" class="list">
+        </ul>
+    </div>
+    <p><small>© 1998 Vintage List Maker Co.</small></p>
+</body>
+</html>
