@@ -35,6 +35,7 @@
             border: 2px outset #004040;
             padding: 5px 10px;
             cursor: pointer;
+            font-family: 'Adobe Dia', "Courier New", monospace;
         }
 
         .button:hover {
@@ -54,6 +55,10 @@
             margin: 5px;
         }
 
+        input[type="file"] {
+            margin: 5px;
+        }
+
         /* Style for the edit and delete buttons */
         .edit-button, .delete-button {
             font-size: 12px;
@@ -61,7 +66,7 @@
             cursor: pointer;
             margin-left: 10px;
             position: absolute;
-            right: 0;
+            right: 10px; /* Adjusted to prevent overlap */
         }
 
         .edit-button:hover, .delete-button:hover {
@@ -71,34 +76,66 @@
         /* Style for list items */
         li {
             position: relative;
-            padding-right: 60px; /* To accommodate buttons */
+            padding-right: 50px; /* To accommodate buttons */
             margin: 10px 0;
         }
     </style>
     <script>
+        // Load the list from localStorage if it exists
+        function loadList() {
+            const savedList = JSON.parse(localStorage.getItem('vintaList'));
+            if (savedList) {
+                savedList.forEach(item => {
+                    addItemToList(item.type, item.value);
+                });
+            }
+        }
+
+        // Save the list to localStorage
+        function saveList() {
+            const listItems = [];
+            document.querySelectorAll('#list li').forEach(item => {
+                const type = item.getAttribute('data-type');
+                const value = item.firstChild.nodeValue || item.querySelector('a').href || item.querySelector('img').src;
+                listItems.push({ type, value });
+            });
+            localStorage.setItem('vintaList', JSON.stringify(listItems));
+        }
+
         function addItem() {
-            const list = document.getElementById("list");
             const type = document.getElementById("itemType").value;
             const inputValue = document.getElementById("inputValue").value;
+            if (!inputValue) return; // Avoid adding empty items
+
+            addItemToList(type, inputValue);
+            saveList(); // Save the updated list to localStorage
+            document.getElementById("inputValue").value = "";
+        }
+
+        function addItemToList(type, value) {
+            const list = document.getElementById("list");
             let item;
 
             if (type === "text") {
                 item = document.createElement("li");
-                item.textContent = inputValue;
+                item.textContent = value;
+                item.setAttribute("data-type", "text");
             } else if (type === "link") {
                 item = document.createElement("li");
                 const link = document.createElement("a");
-                link.href = inputValue.startsWith("http") ? inputValue : "https://" + inputValue;
-                link.textContent = inputValue;
+                link.href = value.startsWith("http") ? value : "https://" + value;
+                link.textContent = value;
                 link.target = "_blank";
                 item.appendChild(link);
+                item.setAttribute("data-type", "link");
             } else if (type === "image") {
                 item = document.createElement("li");
                 const img = document.createElement("img");
-                img.src = inputValue;
+                img.src = value;
                 img.style.maxWidth = "200px";
                 img.style.border = "2px solid #000";
                 item.appendChild(img);
+                item.setAttribute("data-type", "image");
             }
 
             // Create Edit button
@@ -117,7 +154,6 @@
             item.appendChild(editButton);
             item.appendChild(deleteButton);
             list.appendChild(item);
-            document.getElementById("inputValue").value = "";
         }
 
         // Function to edit a list item
@@ -125,6 +161,7 @@
             const newValue = prompt("Edit item:", item.firstChild.nodeValue);
             if (newValue) {
                 item.firstChild.nodeValue = newValue;
+                saveList(); // Save the updated list
             }
         }
 
@@ -132,11 +169,15 @@
         function deleteItem(item) {
             const list = document.getElementById("list");
             list.removeChild(item);
+            saveList(); // Save the updated list
         }
+
+        // Load the list when the page loads
+        window.onload = loadList;
     </script>
 </head>
 <body>
-    <h1>✨ VintaList ✨</h1>
+    <h1>VintaList</h1>
     <div class="container">
         <h2>Create Your List</h2>
         <label for="itemType">Choose Item Type:</label>
