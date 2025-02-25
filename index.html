@@ -10,6 +10,19 @@
             src: url('Adobe%20Dia.ttf') format('truetype');
         }
 
+        /* Halftone Dotted Background Effect */
+        @keyframes halftone {
+            0% { background-size: 10px 10px; }
+            100% { background-size: 6px 6px; }
+        }
+
+        /* Dotted background pattern using CSS */
+        .halftone {
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+            background-size: 6px 6px;
+            animation: halftone 1s ease infinite;
+        }
+
         body {
             background-color: #c0c0c0;
             font-family: 'Adobe Dia', "Courier New", monospace;
@@ -27,6 +40,10 @@
             background-color: #ffffe0;
             border: 2px solid #000;
             padding: 10px;
+            /* Apply halftone effect to background */
+            background-color: #ffffe0;
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 6px 6px;
         }
 
         .button {
@@ -36,6 +53,9 @@
             padding: 5px 10px;
             cursor: pointer;
             font-family: 'Adobe Dia', "Courier New", monospace;
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.2) 1px, transparent 1px);
+            background-size: 6px 6px;
+            animation: halftone 1s ease infinite;
         }
 
         .button:hover {
@@ -47,6 +67,8 @@
             padding: 10px;
             border: 2px groove #000;
             background-color: #f0f8ff;
+            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+            background-size: 6px 6px;
         }
 
         input[type="text"], input[type="url"] {
@@ -76,16 +98,25 @@
         /* Style for list items */
         li {
             position: relative;
-            padding-right: 50px; /* To accommodate buttons */
+            padding-right: 70px; /* More space for buttons */
             margin: 10px 0;
+        }
+
+        /* Multiple Lists Selector */
+        .list-selector {
+            margin: 10px 0;
+            padding: 5px;
         }
     </style>
     <script>
         // Load the list from localStorage if it exists
         function loadList() {
-            const savedList = JSON.parse(localStorage.getItem('vintaList'));
-            if (savedList) {
-                savedList.forEach(item => {
+            const selectedList = localStorage.getItem('selectedList');
+            const savedLists = JSON.parse(localStorage.getItem('vintaLists'));
+            if (savedLists && selectedList && savedLists[selectedList]) {
+                const listData = savedLists[selectedList];
+                document.getElementById("currentListTitle").innerText = `List: ${selectedList}`;
+                listData.forEach(item => {
                     addItemToList(item.type, item.value);
                 });
             }
@@ -93,13 +124,17 @@
 
         // Save the list to localStorage
         function saveList() {
+            const selectedList = localStorage.getItem('selectedList');
             const listItems = [];
             document.querySelectorAll('#list li').forEach(item => {
                 const type = item.getAttribute('data-type');
                 const value = item.firstChild.nodeValue || item.querySelector('a').href || item.querySelector('img').src;
                 listItems.push({ type, value });
             });
-            localStorage.setItem('vintaList', JSON.stringify(listItems));
+
+            const savedLists = JSON.parse(localStorage.getItem('vintaLists')) || {};
+            savedLists[selectedList] = listItems;
+            localStorage.setItem('vintaLists', JSON.stringify(savedLists));
         }
 
         function addItem() {
@@ -172,7 +207,33 @@
             saveList(); // Save the updated list
         }
 
-        // Load the list when the page loads
+        // Switch between lists
+        function selectList(listName) {
+            localStorage.setItem('selectedList', listName);
+            loadList();
+        }
+
+        // Create a new list
+        function createList() {
+            const newListName = prompt("Enter new list name:");
+            if (newListName) {
+                localStorage.setItem('selectedList', newListName);
+                selectList(newListName);
+            }
+        }
+
+        // Export list as JSON
+        function exportList() {
+            const selectedList = localStorage.getItem('selectedList');
+            const savedLists = JSON.parse(localStorage.getItem('vintaLists'));
+            const listData = savedLists[selectedList];
+            const jsonBlob = new Blob([JSON.stringify(listData, null, 2)], { type: "application/json" });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(jsonBlob);
+            link.download = `${selectedList}.json`;
+            link.click();
+        }
+
         window.onload = loadList;
     </script>
 </head>
@@ -180,6 +241,16 @@
     <h1>VintaList</h1>
     <div class="container">
         <h2>Create Your List</h2>
+        <button class="button" onclick="createList()">Create New List</button>
+
+        <div class="list-selector">
+            <button class="button" onclick="selectList('list1')">List 1</button>
+            <button class="button" onclick="selectList('list2')">List 2</button>
+            <button class="button" onclick="selectList('list3')">List 3</button>
+        </div>
+
+        <h3 id="currentListTitle">List: </h3>
+
         <label for="itemType">Choose Item Type:</label>
         <select id="itemType">
             <option value="text">Text</option>
@@ -189,7 +260,8 @@
         <br>
         <input type="text" id="inputValue" placeholder="Enter text, link, or image URL">
         <button class="button" onclick="addItem()">Add Item</button>
-        
+        <button class="button" onclick="exportList()">Export List</button>
+
         <h3>Your List:</h3>
         <ul id="list" class="list"></ul>
     </div>
