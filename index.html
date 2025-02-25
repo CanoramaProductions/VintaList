@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <title>VintaList</title>
     <style>
-        /* Import the custom Adobe Dia font */
-        @font-face {
-            font-family: 'Adobe Dia';
-            src: url('Adobe%20Dia.ttf') format('truetype');
-        }
-
         /* Halftone Dotted Background Effect */
         @keyframes halftone {
             0% { background-size: 10px 10px; }
@@ -23,6 +17,7 @@
             animation: halftone 1s ease infinite;
         }
 
+        /* Global styles */
         body {
             background-color: #c0c0c0;
             font-family: 'Adobe Dia', "Courier New", monospace;
@@ -40,10 +35,6 @@
             background-color: #ffffe0;
             border: 2px solid #000;
             padding: 10px;
-            /* Apply halftone effect to background */
-            background-color: #ffffe0;
-            background-image: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-            background-size: 6px 6px;
         }
 
         .button {
@@ -88,7 +79,7 @@
             cursor: pointer;
             margin-left: 10px;
             position: absolute;
-            right: 10px; /* Adjusted to prevent overlap */
+            right: 10px;
         }
 
         .edit-button:hover, .delete-button:hover {
@@ -98,7 +89,7 @@
         /* Style for list items */
         li {
             position: relative;
-            padding-right: 70px; /* More space for buttons */
+            padding-right: 70px;
             margin: 10px 0;
         }
 
@@ -112,13 +103,15 @@
         // Load the list from localStorage if it exists
         function loadList() {
             const selectedList = localStorage.getItem('selectedList');
-            const savedLists = JSON.parse(localStorage.getItem('vintaLists'));
-            if (savedLists && selectedList && savedLists[selectedList]) {
+            const savedLists = JSON.parse(localStorage.getItem('vintaLists')) || {};
+            if (savedLists[selectedList]) {
                 const listData = savedLists[selectedList];
                 document.getElementById("currentListTitle").innerText = `List: ${selectedList}`;
                 listData.forEach(item => {
                     addItemToList(item.type, item.value);
                 });
+            } else {
+                document.getElementById("currentListTitle").innerText = "No List Selected";
             }
         }
 
@@ -207,30 +200,59 @@
             saveList(); // Save the updated list
         }
 
+        // Create a new list
+        function createList() {
+            const newListName = prompt("Enter new list name:");
+            if (newListName) {
+                const savedLists = JSON.parse(localStorage.getItem('vintaLists')) || {};
+                if (!savedLists[newListName]) {
+                    localStorage.setItem('selectedList', newListName);
+                    savedLists[newListName] = [];
+                    localStorage.setItem('vintaLists', JSON.stringify(savedLists));
+                    selectList(newListName);
+                } else {
+                    alert("List name already exists!");
+                }
+            }
+        }
+
         // Switch between lists
         function selectList(listName) {
             localStorage.setItem('selectedList', listName);
             loadList();
         }
 
-        // Create a new list
-        function createList() {
-            const newListName = prompt("Enter new list name:");
-            if (newListName) {
-                localStorage.setItem('selectedList', newListName);
-                selectList(newListName);
+        // Edit the list title
+        function editListTitle() {
+            const currentList = localStorage.getItem('selectedList');
+            const newTitle = prompt("Edit list title:", currentList);
+            if (newTitle && newTitle !== currentList) {
+                localStorage.setItem('selectedList', newTitle);
+                loadList();
             }
         }
 
-        // Export list as JSON
+        // Export list as .txt file
         function exportList() {
             const selectedList = localStorage.getItem('selectedList');
             const savedLists = JSON.parse(localStorage.getItem('vintaLists'));
             const listData = savedLists[selectedList];
-            const jsonBlob = new Blob([JSON.stringify(listData, null, 2)], { type: "application/json" });
+            let listText = `List: ${selectedList}\n\n`;
+
+            listData.forEach(item => {
+                if (item.type === "text") {
+                    listText += `Text: ${item.value}\n`;
+                } else if (item.type === "link") {
+                    listText += `Link: ${item.value}\n`;
+                } else if (item.type === "image") {
+                    listText += `Image: ${item.value}\n`;
+                }
+            });
+
+            const textBlob = new Blob([listText], { type: "text/plain" });
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(jsonBlob);
-            link.download = `${selectedList}.json`;
+            link.href = URL.createObjectURL(textBlob);
+            link.download = `${selectedList}.txt`;
             link.click();
         }
 
@@ -242,6 +264,7 @@
     <div class="container">
         <h2>Create Your List</h2>
         <button class="button" onclick="createList()">Create New List</button>
+        <button class="button" onclick="editListTitle()">Edit List Title</button>
 
         <div class="list-selector">
             <button class="button" onclick="selectList('list1')">List 1</button>
