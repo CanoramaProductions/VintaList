@@ -25,22 +25,40 @@ h1 {
 .button:hover {
     background-color: #8B0000;
 }
+.theme-selector {
+    margin-bottom: 20px;
+}
+#themeSelect {
+    padding: 5px;
+    background-color: #FF4500;
+    color: white;
+    border: none;
+    font-size: 16px;
+}
 .list {
     text-align: left;
     padding: 10px;
     border: 3px ridge #000080;
     background-color: #E0FFFF;
     list-style: none;
+    margin-top: 20px;
 }
-.theme-button {
-    margin: 5px;
-    padding: 5px 10px;
+.edit-button, .delete-button {
+    font-size: 12px;
+    opacity: 0.5;
     cursor: pointer;
-    border: 2px solid #8B0000;
 }
-.theme-button:hover {
-    background-color: #8B0000;
-    color: #fff;
+.edit-button {
+    margin-left: 10px;
+}
+.delete-button {
+    margin-left: 10px;
+}
+.edit-button:hover, .delete-button:hover {
+    opacity: 1;
+}
+.theme-selector {
+    margin: 20px 0;
 }
 
 /* Themes */
