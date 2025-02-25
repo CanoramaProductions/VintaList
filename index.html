@@ -1,49 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>VintaLink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VintaList</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>VintaLink</h1>
-    <div class="container">
-        <div>
-            <label for="itemType">Type:</label>
-            <select id="itemType">
-                <option value="text">Text</option>
-                <option value="link">Link</option>
-                <option value="image">Image</option>
-            </select>
-            <input type="text" id="inputValue" placeholder="Enter text, link, or image URL">
-            <button class="button" onclick="addItem()">Add Item</button>
-        </div>
-
-        <div>
-            <label for="category">Category:</label>
-            <input type="text" id="category" placeholder="Enter category">
-        </div>
-
-        <div>
-            <input type="text" id="searchBar" placeholder="Search...">
-        </div>
-
-        <ul id="list" class="list"></ul>
+    <h1>VintaList</h1>
+    
+    <!-- Style Selector -->
+    <div class="theme-selector">
+        <label for="themeSelect">Choose a theme:</label>
+        <select id="themeSelect" onchange="applyTheme()">
+            <option value="default">Default</option>
+            <option value="90s-neon">90s Neon</option>
+            <option value="80s-pastel">80s Pastel</option>
+            <option value="70s-hippy">70s Hippy</option>
+            <option value="wild-west">Wild West</option>
+            <option value="2000s-aero">2000s Frutiger Aero</option>
+            <option value="2010s">2010s Inspired</option>
+            <option value="modern">Modern</option>
+            <option value="dark-mode">Modern (Dark Mode)</option>
+            <option value="futuristic">Futuristic</option>
+        </select>
     </div>
 
-    <div class="container">
-        <h3>Themes:</h3>
-        <button class="theme-button" onclick="applyTheme('90s-neon')">90s Neon</button>
-        <button class="theme-button" onclick="applyTheme('80s-pastel')">80s Pastel</button>
-        <button class="theme-button" onclick="applyTheme('70s-hippy')">70s Hippy</button>
-        <button class="theme-button" onclick="applyTheme('wild-west')">Wild West</button>
-        <button class="theme-button" onclick="applyTheme('2000s-aero')">2000s Frutiger Aero</button>
-        <button class="theme-button" onclick="applyTheme('2010s')">2010s Inspired</button>
-        <button class="theme-button" onclick="applyTheme('modern')">Modern</button>
-        <button class="theme-button" onclick="applyTheme('dark-mode')">Modern (Dark Mode)</button>
-        <button class="theme-button" onclick="applyTheme('futuristic')">Futuristic</button>
+    <!-- Create List Button -->
+    <button id="createListBtn" class="button" onclick="createList()">Create List</button>
+
+    <!-- List Management -->
+    <div>
+        <label for="itemType">Type:</label>
+        <select id="itemType">
+            <option value="text">Text</option>
+            <option value="link">Link</option>
+            <option value="image">Image</option>
+        </select>
+        <input type="text" id="inputValue" placeholder="Enter text, link, or image URL">
+        <button class="button" onclick="addItem()">Add Item</button>
     </div>
 
+    <ul id="list" class="list"></ul>
+
+    <!-- Date & Time Stamps -->
     <div class="container">
         <p id="creationTime"></p>
         <p id="updateTime"></p>
