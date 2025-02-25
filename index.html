@@ -1,54 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VintaList</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Import the custom Adobe Dia font */
+        @font-face {
+            font-family: 'Adobe Dia';
+            src: url('Adobe%20Dia.ttf') format('truetype');
+        }
+
+        body {
+            background-color: #c0c0c0;
+            font-family: 'Adobe Dia', "Courier New", monospace;
+            color: #000080;
+            text-align: center;
+        }
+
+        h1 {
+            text-shadow: 2px 2px #fff;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            background-color: #ffffe0;
+            border: 2px solid #000;
+            padding: 10px;
+        }
+
+        .button {
+            background-color: #008080;
+            color: #fff;
+            border: 2px outset #004040;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #004040;
+        }
+
+        .list {
+            text-align: left;
+            padding: 10px;
+            border: 2px groove #000;
+            background-color: #f0f8ff;
+        }
+
+        input[type="text"], input[type="url"] {
+            width: 60%;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        /* Style for the edit and delete buttons */
+        .edit-button, .delete-button {
+            font-size: 12px;
+            opacity: 0.5;
+            cursor: pointer;
+            margin-left: 10px;
+            position: absolute;
+            right: 0;
+        }
+
+        .edit-button:hover, .delete-button:hover {
+            opacity: 1;
+        }
+
+        /* Style for list items */
+        li {
+            position: relative;
+            padding-right: 60px; /* To accommodate buttons */
+            margin: 10px 0;
+        }
+    </style>
+    <script>
+        function addItem() {
+            const list = document.getElementById("list");
+            const type = document.getElementById("itemType").value;
+            const inputValue = document.getElementById("inputValue").value;
+            let item;
+
+            if (type === "text") {
+                item = document.createElement("li");
+                item.textContent = inputValue;
+            } else if (type === "link") {
+                item = document.createElement("li");
+                const link = document.createElement("a");
+                link.href = inputValue.startsWith("http") ? inputValue : "https://" + inputValue;
+                link.textContent = inputValue;
+                link.target = "_blank";
+                item.appendChild(link);
+            } else if (type === "image") {
+                item = document.createElement("li");
+                const img = document.createElement("img");
+                img.src = inputValue;
+                img.style.maxWidth = "200px";
+                img.style.border = "2px solid #000";
+                item.appendChild(img);
+            }
+
+            // Create Edit button
+            const editButton = document.createElement("span");
+            editButton.textContent = "[Edit]";
+            editButton.className = "edit-button";
+            editButton.onclick = () => editItem(item);
+
+            // Create Delete button
+            const deleteButton = document.createElement("span");
+            deleteButton.textContent = "[Delete]";
+            deleteButton.className = "delete-button";
+            deleteButton.onclick = () => deleteItem(item);
+
+            // Append the buttons and item to the list
+            item.appendChild(editButton);
+            item.appendChild(deleteButton);
+            list.appendChild(item);
+            document.getElementById("inputValue").value = "";
+        }
+
+        // Function to edit a list item
+        function editItem(item) {
+            const newValue = prompt("Edit item:", item.firstChild.nodeValue);
+            if (newValue) {
+                item.firstChild.nodeValue = newValue;
+            }
+        }
+
+        // Function to delete a list item
+        function deleteItem(item) {
+            const list = document.getElementById("list");
+            list.removeChild(item);
+        }
+    </script>
 </head>
 <body>
-    <h1>VintaList</h1>
-    
-    <!-- Style Selector -->
-    <div class="theme-selector">
-        <label for="themeSelect">Choose a theme:</label>
-        <select id="themeSelect" onchange="applyTheme()">
-            <option value="default">Default</option>
-            <option value="90s-neon">90s Neon</option>
-            <option value="80s-pastel">80s Pastel</option>
-            <option value="70s-hippy">70s Hippy</option>
-            <option value="wild-west">Wild West</option>
-            <option value="2000s-aero">2000s Frutiger Aero</option>
-            <option value="2010s">2010s Inspired</option>
-            <option value="modern">Modern</option>
-            <option value="dark-mode">Modern (Dark Mode)</option>
-            <option value="futuristic">Futuristic</option>
-        </select>
-    </div>
-
-    <!-- Create List Button -->
-    <button id="createListBtn" class="button" onclick="createList()">Create List</button>
-
-    <!-- List Management -->
-    <div>
-        <label for="itemType">Type:</label>
+    <h1>✨ VintaList ✨</h1>
+    <div class="container">
+        <h2>Create Your List</h2>
+        <label for="itemType">Choose Item Type:</label>
         <select id="itemType">
             <option value="text">Text</option>
             <option value="link">Link</option>
-            <option value="image">Image</option>
+            <option value="image">Image (URL)</option>
         </select>
+        <br>
         <input type="text" id="inputValue" placeholder="Enter text, link, or image URL">
         <button class="button" onclick="addItem()">Add Item</button>
+        
+        <h3>Your List:</h3>
+        <ul id="list" class="list"></ul>
     </div>
-
-    <ul id="list" class="list"></ul>
-
-    <!-- Date & Time Stamps -->
-    <div class="container">
-        <p id="creationTime"></p>
-        <p id="updateTime"></p>
-    </div>
-
-    <script src="script.js"></script>
+    <p><small>© 1998 Vintage List Maker Co.</small></p>
 </body>
 </html>
